@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Game extends JPanel {
@@ -65,7 +66,6 @@ public class Game extends JPanel {
 						k_direita_azul = true;
 						novoTempoAzul = System.currentTimeMillis(); // click atual
 						intervaloAzul = novoTempoAzul - tempoAnteriorAzul; // intevalo entre o click anteiror e atual
-						System.out.println(intervaloAzul);
 
 						fatorMaisAzul = 0;
 
@@ -89,7 +89,7 @@ public class Game extends JPanel {
 
 					
 				}
-			}
+			}  
 
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -156,9 +156,16 @@ public class Game extends JPanel {
 	}
 
 	public void testeColisoes() {
-		// if (bola.posX + (bola.raio * 2) >= Main.LARGURA_TELA || bola.posX < 0) {
-		// 	bola.posX -= bola.velX;
-		// }
+
+		if (bolaAzul.posX + (bolaAzul.raio * 2) >= Main.LARGURA_TELA || bolaAzul.posX < 0) {
+			JOptionPane.showMessageDialog(null, "Bola Azul ganhou!");
+			System.exit(0);
+		}
+
+		if (bolaVermelha.posX + (bolaVermelha.raio * 2) >= Main.LARGURA_TELA || bolaVermelha.posX < 0) {
+			JOptionPane.showMessageDialog(null, "Bola Vemelha ganhou!");
+			System.exit(0);
+		}
 	}
 
 	@Override
