@@ -2,28 +2,33 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Game extends JPanel {
 
-	private Bola bolaAzul;
-	private int fatorMaisAzul = 0;
+	private Cavalo CavaloAzul;
 	private long novoTempoAzul = 0;
 	private long  tempoAnteriorAzul = 0;
 	private long  intervaloAzul = 1000;
 	private boolean k_direita_azul = false;
-
-	private Bola bolaVermelha;
-	private int fatorMaisVermelho = 0;
+	
+	private Cavalo bolaVermelha;
 	private long novoTempoVermelho= 0;
 	private long tempoAnteriorVermelho = 0;
 	private long intervaloVermelho = 1000;
 	private boolean k_direita_vermelho = false;
 	
+	private BufferedImage imgAtual;
 	// private int fatorMenos = 1;
 
 	public Game() {
+		bolaVermelha= new Cavalo();
+		CavaloAzul = new Cavalo();
+		imgAtual = CavaloAzul.movimento1;
+		
 		addKeyListener(new KeyListener() {
 			
 			@Override
@@ -40,22 +45,7 @@ public class Game extends JPanel {
 						novoTempoVermelho = System.currentTimeMillis();
 						intervaloVermelho = novoTempoVermelho - tempoAnteriorVermelho;
 						
-						fatorMaisVermelho=0;
-
-						if(intervaloVermelho<60){
-							fatorMaisVermelho = 15;
-						}
-						else if(intervaloVermelho<90){
-							fatorMaisVermelho = 10;
-						}
-						else if(intervaloVermelho<150){
-							fatorMaisVermelho = 5;
-						}
-						else{
-							fatorMaisVermelho=0;
-						}
-
-						bolaVermelha.posX = bolaVermelha.posX + fatorMaisVermelho;
+						bolaVermelha.posX = bolaVermelha.posX + Recursos.getInstance().GetFatorByIntervalo(intervaloVermelho);
 
 						break;
 					}
@@ -64,30 +54,19 @@ public class Game extends JPanel {
 					case KeyEvent.VK_SPACE:{
 
 						k_direita_azul = true;
-						novoTempoAzul = System.currentTimeMillis(); // click atual
-						intervaloAzul = novoTempoAzul - tempoAnteriorAzul; // intevalo entre o click anteiror e atual
-
-						fatorMaisAzul = 0;
-
-						if(intervaloAzul<60){
-							fatorMaisAzul = 15;
-						}
-						else if(intervaloAzul<90){
-							fatorMaisAzul = 10;
-						}
-						else if(intervaloAzul<150){
-							fatorMaisAzul = 5;
-						}
-						else{
-							fatorMaisAzul=0;
+						novoTempoAzul = System.currentTimeMillis(); 
+						intervaloAzul = novoTempoAzul - tempoAnteriorAzul;
+						
+						if (imgAtual == CavaloAzul.movimento1) {
+							imgAtual = CavaloAzul.movimento2;
+						}else{
+							imgAtual = CavaloAzul.movimento1;
 						}
 
-						bolaAzul.posX = bolaAzul.posX + fatorMaisAzul;
+						CavaloAzul.posX = CavaloAzul.posX + Recursos.getInstance().GetFatorByIntervalo(intervaloAzul);
 
 						break;
 					}
-
-					
 				}
 			}  
 
@@ -106,15 +85,10 @@ public class Game extends JPanel {
 						k_direita_azul = false;
 						break;
 					}
-					
-					
 				}
-				
 			}
 		});
 
-		bolaVermelha= new Bola();
-		bolaAzul = new Bola();
 		
 		setFocusable(true);
 		setLayout(null);
@@ -140,8 +114,9 @@ public class Game extends JPanel {
 	}
 
 	public void handlerEvents() {
-		bolaAzul.velX = 0;
-		bolaAzul.velY = 0;
+
+		CavaloAzul.velX = 0;
+		CavaloAzul.velY = 0;
 
 		bolaVermelha.velX = 0;
 		bolaVermelha.velY = 0;
@@ -157,7 +132,7 @@ public class Game extends JPanel {
 
 	public void testeColisoes() {
 
-		if (bolaAzul.posX + (bolaAzul.raio * 2) >= Main.LARGURA_TELA || bolaAzul.posX < 0) {
+		if (CavaloAzul.posX + (CavaloAzul.raio * 2) >= Main.LARGURA_TELA || CavaloAzul.posX < 0) {
 			JOptionPane.showMessageDialog(null, "Bola Azul ganhou!");
 			System.exit(0);
 		}
@@ -173,10 +148,10 @@ public class Game extends JPanel {
 		super.paintComponent(g);
 		setBackground(Color.LIGHT_GRAY);
 		g.setColor(Color.BLUE);
-		g.fillOval(bolaAzul.posX, 10, bolaAzul.raio * 2, bolaAzul.raio * 2);
+		g.drawImage(imgAtual, CavaloAzul.posX, CavaloAzul.posY, null);
 
-		g.setColor(Color.RED);
-		g.fillOval(bolaVermelha.posX, 80, bolaVermelha.raio * 2, bolaVermelha.raio * 2);
+		// g.setColor(Color.RED);
+		// g.fillOval(bolaVermelha.posX, 80, bolaVermelha.raio * 2, bolaVermelha.raio * 2);
 	}
 
 }
