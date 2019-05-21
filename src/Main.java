@@ -14,9 +14,10 @@ public class Main {
         //janela.setSize(LARGURA_TELA, ALTURA_TELA); // dimensões da janela
         janela.setResizable(false); // impede redimensionamento
         janela.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // modo de encerramento
-        janela.setLocation(100, 100); // posição da janela na tela
+        // janela.setLocation(100, 100); // posição da janela na tela
         janela.setVisible(true); // torna a janela visível
         janela.pack();
+        janela.setLocationRelativeTo(null);
     }
 
     public static void main(String[] args) {

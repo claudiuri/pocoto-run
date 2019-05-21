@@ -3,11 +3,11 @@ import javax.imageio.ImageIO;
 
 public class Horse {
 
-    public int posX;
-    public int posY;
-    public int raio;
-    public int velX;
-    public int velY;
+    public double posX;
+    public double posY;
+    public double raio;
+    public double velX;
+    public double velY;
 
     public BufferedImage spriteYelow; 
     public BufferedImage spriteBlack; 
@@ -40,7 +40,7 @@ public class Horse {
                 System.out.println("Erro ao carregar a imagem!" + e);
         }
 
-    	raio = 30;
+    	raio = 67;
         posX = 0;
         posY = 320;
         velX = 0;

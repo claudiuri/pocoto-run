@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 
 public class Game extends JPanel {
 
+	private final double decay = 10000000;
+
 	private Horse horseBlack;
 	private long newTimeBlack = 0;
 	private long  previousTimeBlack = 0;
@@ -73,6 +75,8 @@ public class Game extends JPanel {
 
 						horseYelow.posX = horseYelow.posX + Recursos.getInstance().GetFatorByIntervalo(intervalYelow);
 
+					
+
 						break;
 					}
 					case KeyEvent.VK_SPACE:{
@@ -90,6 +94,8 @@ public class Game extends JPanel {
 						}
 
 						horseBlack.posX = horseBlack.posX + Recursos.getInstance().GetFatorByIntervalo(intervalBlack);
+
+						testeColisoes();
 
 						break;
 					}
@@ -111,7 +117,10 @@ public class Game extends JPanel {
 						k_run_black = false;
 						break;
 					}
+
 				}
+
+				
 			}
 		});
 
@@ -148,8 +157,6 @@ public class Game extends JPanel {
 
 	public void handlerEvents() {
 
-		
-
 		horseBlack.velX = 0;
 		horseBlack.velY = 0;
 
@@ -165,7 +172,10 @@ public class Game extends JPanel {
 		bg01.move(deltaTime);
 		bg02.move(deltaTime);
 		bg03.move(deltaTime);
-		// testeColisoes();
+
+					
+		testeColisoes();
+		
 	}
 
 	public void render() {
@@ -174,15 +184,18 @@ public class Game extends JPanel {
 
 	public void testeColisoes() {
 
-		// if (cavaloPreto.posX + (cavaloPreto.raio * 2) >= Main.LARGURA_TELA || cavaloPreto.posX < 0) {
-		// 	JOptionPane.showMessageDialog(null, "Bola Azul ganhou!");
-		// 	System.exit(0);
-		// }
+		if (horseBlack.posX + (horseBlack.raio * 2) >= Main.LARGURA_TELA || horseBlack.posX < 0) {
+			horseBlack.posX = 0;
+			horseYelow.posX = 0;
+			JOptionPane.showMessageDialog(null, "Cavalo preto ganhou!");
+		}
 
-		// if (bolaVermelha.posX + (bolaVermelha.raio * 2) >= Main.LARGURA_TELA || bolaVermelha.posX < 0) {
-		// 	JOptionPane.showMessageDialog(null, "Bola Vemelha ganhou!");
-		// 	System.exit(0);
-		// }
+		if (horseYelow.posX + (horseYelow.raio * 2) >= Main.LARGURA_TELA || horseYelow.posX < 0) {
+
+			horseBlack.posX = 0;
+			horseYelow.posX = 0;
+			JOptionPane.showMessageDialog(null, "Cavalo marelo ganhou!");
+		}
 	}
 
 	@Override
@@ -204,8 +217,8 @@ public class Game extends JPanel {
 		af03.translate(bg03.posX, bg03.posY);
 		g2d.drawImage(bg03.img, af03, null);
 		
-		g.drawImage(currentSpriteBlack, horseBlack.posX, horseBlack.posY, null);
-		g.drawImage(currentSpriteYelow, horseYelow.posX, horseYelow.posY, null);
+		g.drawImage(currentSpriteBlack,  (int) Math.floor(horseBlack.posX), (int) Math.floor(horseBlack.posY), null);
+		g.drawImage(currentSpriteYelow, (int) Math.floor(horseYelow.posX), (int) Math.floor(horseYelow.posY), null);
 	}
 
 }
