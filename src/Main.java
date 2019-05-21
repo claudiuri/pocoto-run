@@ -3,7 +3,7 @@ import javax.swing.JFrame;
 
 public class Main {
 
-    public static final int LARGURA_TELA = 640;
+    public static final int LARGURA_TELA = 1280;
     public static final int ALTURA_TELA = 480;
 
     public Main() {

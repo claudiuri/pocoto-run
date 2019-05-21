@@ -1,33 +1,52 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+
 public class Game extends JPanel {
 
-	private Cavalo CavaloAzul;
-	private long novoTempoAzul = 0;
-	private long  tempoAnteriorAzul = 0;
-	private long  intervaloAzul = 1000;
-	private boolean k_direita_azul = false;
+	private Horse horseBlack;
+	private long newTimeBlack = 0;
+	private long  previousTimeBlack = 0;
+	private long  intervalBlack = 1000;
+	private boolean k_run_black = false;
 	
-	private Cavalo bolaVermelha;
-	private long novoTempoVermelho= 0;
-	private long tempoAnteriorVermelho = 0;
-	private long intervaloVermelho = 1000;
-	private boolean k_direita_vermelho = false;
+	private Horse horseYelow;
+	private long newTimeYelow = 0;
+	private long previousTimeYelow = 0;
+	private long intervalYelow = 1000;
+	private boolean k_run_yelow = false;
 	
-	private BufferedImage imgAtual;
+	private BufferedImage currentSpriteBlack;
+	private BufferedImage currentSpriteYelow;
 	// private int fatorMenos = 1;
 
+	Background bg01, bg02, bg03, bg04;
+
 	public Game() {
-		bolaVermelha= new Cavalo();
-		CavaloAzul = new Cavalo();
-		imgAtual = CavaloAzul.movimento1;
+
+		try {
+			bg01 = new Background("img/bg_01.png",0);
+			bg02 = new Background("img/bg_02.png",640);
+			bg03 = new Background("img/bg_03.png",1280);
+			bg04 = new Background("img/bg_01.png",2560);
+		}catch (Exception e) {
+			System.out.println("Erro ao carregar a imagem!" + e);
+		}
+
+		horseBlack = new Horse();
+		horseYelow = new Horse();
+		horseYelow.posY = horseBlack.posY + 10;
+
+		currentSpriteBlack = horseBlack.blackMoviment1;
+		currentSpriteYelow = horseYelow.yelowMoviment1;
 		
 		addKeyListener(new KeyListener() {
 			
@@ -38,32 +57,39 @@ public class Game extends JPanel {
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 
-					// Movimenta a bola vermelha
 					case KeyEvent.VK_RIGHT: {
 
-						k_direita_vermelho = true;
-						novoTempoVermelho = System.currentTimeMillis();
-						intervaloVermelho = novoTempoVermelho - tempoAnteriorVermelho;
+						k_run_yelow = true;
+						newTimeYelow = System.currentTimeMillis(); 
+						intervalYelow = newTimeYelow - previousTimeYelow;
 						
-						bolaVermelha.posX = bolaVermelha.posX + Recursos.getInstance().GetFatorByIntervalo(intervaloVermelho);
+						if (currentSpriteYelow == horseYelow.yelowMoviment1) {
+							currentSpriteYelow = horseYelow.yelowMoviment2;
+						}else if(currentSpriteYelow == horseYelow.yelowMoviment2){
+							currentSpriteYelow = horseYelow.yelowMoviment3;
+						}else{
+							currentSpriteYelow = horseYelow.yelowMoviment1;
+						}
+
+						horseYelow.posX = horseYelow.posX + Recursos.getInstance().GetFatorByIntervalo(intervalYelow);
 
 						break;
 					}
-					
-					// Movimenta a bola azul 
 					case KeyEvent.VK_SPACE:{
 
-						k_direita_azul = true;
-						novoTempoAzul = System.currentTimeMillis(); 
-						intervaloAzul = novoTempoAzul - tempoAnteriorAzul;
+						k_run_black = true;
+						newTimeBlack = System.currentTimeMillis(); 
+						intervalBlack = newTimeBlack - previousTimeBlack;
 						
-						if (imgAtual == CavaloAzul.movimento1) {
-							imgAtual = CavaloAzul.movimento2;
+						if (currentSpriteBlack == horseBlack.blackMoviment1) {
+							currentSpriteBlack = horseBlack.blackMoviment2;
+						}else if(currentSpriteBlack == horseBlack.blackMoviment2){
+							currentSpriteBlack = horseBlack.blackMoviment3;
 						}else{
-							imgAtual = CavaloAzul.movimento1;
+							currentSpriteBlack = horseBlack.blackMoviment1;
 						}
 
-						CavaloAzul.posX = CavaloAzul.posX + Recursos.getInstance().GetFatorByIntervalo(intervaloAzul);
+						horseBlack.posX = horseBlack.posX + Recursos.getInstance().GetFatorByIntervalo(intervalBlack);
 
 						break;
 					}
@@ -75,14 +101,14 @@ public class Game extends JPanel {
 				switch (e.getKeyCode()) {
 
 					case KeyEvent.VK_RIGHT:{
-						tempoAnteriorVermelho = System.currentTimeMillis();
-						k_direita_vermelho = false;
+						previousTimeYelow = System.currentTimeMillis();
+						k_run_yelow = false;
 						break;
 					}
 
 					case KeyEvent.VK_SPACE:{
-						tempoAnteriorAzul = System.currentTimeMillis();
-						k_direita_azul = false;
+						previousTimeBlack = System.currentTimeMillis();
+						k_run_black = false;
 						break;
 					}
 				}
@@ -102,9 +128,16 @@ public class Game extends JPanel {
 	}
 
 	public void gameloop() {
+		long tempoInicio=System.nanoTime();
+		long tempoAnterior = tempoInicio;
+		long deltaTime=0;
+
 		while (true) {
+			tempoInicio = System.nanoTime();
+			deltaTime = tempoInicio - tempoAnterior;
+			tempoAnterior = tempoInicio;
 			handlerEvents();
-			update();
+			update(deltaTime);
 			render();
 			try {
 				Thread.sleep(17);
@@ -115,15 +148,24 @@ public class Game extends JPanel {
 
 	public void handlerEvents() {
 
-		CavaloAzul.velX = 0;
-		CavaloAzul.velY = 0;
+		
 
-		bolaVermelha.velX = 0;
-		bolaVermelha.velY = 0;
+		horseBlack.velX = 0;
+		horseBlack.velY = 0;
+
+		horseYelow.velX = 0;
+		horseYelow.velY = 0;
 	}
 
-	public void update() {
-		testeColisoes();
+	public void update(long deltaTime) {
+
+		bg01.checkPosition();
+		bg02.checkPosition();
+		bg03.checkPosition();
+		bg01.move(deltaTime);
+		bg02.move(deltaTime);
+		bg03.move(deltaTime);
+		// testeColisoes();
 	}
 
 	public void render() {
@@ -132,26 +174,38 @@ public class Game extends JPanel {
 
 	public void testeColisoes() {
 
-		if (CavaloAzul.posX + (CavaloAzul.raio * 2) >= Main.LARGURA_TELA || CavaloAzul.posX < 0) {
-			JOptionPane.showMessageDialog(null, "Bola Azul ganhou!");
-			System.exit(0);
-		}
+		// if (cavaloPreto.posX + (cavaloPreto.raio * 2) >= Main.LARGURA_TELA || cavaloPreto.posX < 0) {
+		// 	JOptionPane.showMessageDialog(null, "Bola Azul ganhou!");
+		// 	System.exit(0);
+		// }
 
-		if (bolaVermelha.posX + (bolaVermelha.raio * 2) >= Main.LARGURA_TELA || bolaVermelha.posX < 0) {
-			JOptionPane.showMessageDialog(null, "Bola Vemelha ganhou!");
-			System.exit(0);
-		}
+		// if (bolaVermelha.posX + (bolaVermelha.raio * 2) >= Main.LARGURA_TELA || bolaVermelha.posX < 0) {
+		// 	JOptionPane.showMessageDialog(null, "Bola Vemelha ganhou!");
+		// 	System.exit(0);
+		// }
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		setBackground(Color.LIGHT_GRAY);
-		g.setColor(Color.BLUE);
-		g.drawImage(imgAtual, CavaloAzul.posX, CavaloAzul.posY, null);
+		// setBackground(Color.LIGHT_GRAY);
+		Graphics2D g2d = (Graphics2D) g;
 
-		// g.setColor(Color.RED);
-		// g.fillOval(bolaVermelha.posX, 80, bolaVermelha.raio * 2, bolaVermelha.raio * 2);
+		AffineTransform af01 = new AffineTransform();
+		AffineTransform af02 = new AffineTransform();
+		AffineTransform af03 = new AffineTransform();
+		
+		af01.translate(bg01.posX, bg01.posY);
+		g2d.drawImage(bg01.img, af01, null);
+		
+		af02.translate(bg02.posX, bg02.posY);
+		g2d.drawImage(bg02.img, af02, null);
+		
+		af03.translate(bg03.posX, bg03.posY);
+		g2d.drawImage(bg03.img, af03, null);
+		
+		g.drawImage(currentSpriteBlack, horseBlack.posX, horseBlack.posY, null);
+		g.drawImage(currentSpriteYelow, horseYelow.posX, horseYelow.posY, null);
 	}
 
 }
