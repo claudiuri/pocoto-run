@@ -6,6 +6,7 @@ import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -28,6 +29,7 @@ public class Game extends JPanel {
 	
 	private BufferedImage currentSpriteBlack;
 	private BufferedImage currentSpriteYelow;
+	private BufferedImage header;
 	// private int fatorMenos = 1;
 
 	Background bg01, bg02, bg03, bg04;
@@ -39,6 +41,7 @@ public class Game extends JPanel {
 			bg02 = new Background("img/bg_02.png",640);
 			bg03 = new Background("img/bg_03.png",1280);
 			bg04 = new Background("img/bg_01.png",2560);
+			header = ImageIO.read(getClass().getResource("img/header.png"));
 		}catch (Exception e) {
 			System.out.println("Erro ao carregar a imagem!" + e);
 		}
@@ -217,6 +220,7 @@ public class Game extends JPanel {
 		af03.translate(bg03.posX, bg03.posY);
 		g2d.drawImage(bg03.img, af03, null);
 		
+		g.drawImage(header, Main.LARGURA_TELA/2 -  header.getWidth()/2, 5, null);
 		g.drawImage(currentSpriteBlack,  (int) Math.floor(horseBlack.posX), (int) Math.floor(horseBlack.posY), null);
 		g.drawImage(currentSpriteYelow, (int) Math.floor(horseYelow.posX), (int) Math.floor(horseYelow.posY), null);
 	}
